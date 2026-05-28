@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-parchment: #f4e4c1;
+  --color-parchment-dark: #e2cfa0;
+  --color-burgundy: #6b1a1a;
+  --color-gold: #c9a84c;
+  --color-ink: #1a0808;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'IM Fell English', Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: #0d0a06;
+  color: var(--color-parchment);
+  min-height: 100vh;
+}
