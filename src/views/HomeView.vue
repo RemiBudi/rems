@@ -1,15 +1,23 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import ItemCard from '@/components/ItemCard.vue'
+import BookModal from '@/components/BookModal.vue'
 
-interface BookItem {
+type BookItem = {
   type: 'book'
+  isbn: string
   title: string
   author: string
-  note: number
-  status: 'Lu' | 'A lire'
+  coverUrl?: string
+  description?: string
+  publisher?: string
+  publishedDate?: string
+  pageCount?: number
+  subjects?: string
+  language?: string
 }
 
-interface PartitionItem {
+type PartitionItem = {
   type: 'partition'
   title: string
   composer: string
@@ -17,24 +25,49 @@ interface PartitionItem {
 
 type Item = BookItem | PartitionItem
 
-const items: Item[] = [
-  { type: 'book', title: 'Alice au pays des merveilles', author: 'Lewis Carroll', note: 0, status: 'Lu' },
-  { type: 'partition', title: 'Clair de Lune', composer: 'Claude Debussy' },
-  { type: 'book', title: 'Chien 51', author: 'Laurent Gaudé', note: 4, status: 'Lu' },
-  { type: 'book', title: 'Le Bruit et la Fureur', author: 'William Faulkner', note: 3, status: 'Lu' },
-  { type: 'partition', title: 'Gymnopédie No. 1', composer: 'Erik Satie' },
-  { type: 'book', title: 'Nous nous verrons en août', author: 'Gabriel García Márquez', note: 3, status: 'Lu' },
-  { type: 'book', title: 'Fragments', author: "Héraclite d'Éphèse", note: 0, status: 'A lire' },
-]
+const items = ref<Item[]>([])
+const loading = ref(true)
+const error = ref(false)
+const selectedBook = ref<BookItem | null>(null)
+
+function openBook(item: Item) {
+  if (item.type === 'book') selectedBook.value = item
+}
 
 const rotations = [-5, 3, -2, 6, -4, 2, -7, 4, -3, 5, -6, 3]
 const offsetsY = [8, -12, 4, -8, 16, -4, 10, -16, 6, -10, 14, -6]
 
 function getTransform(index: number): string {
-  const rot = rotations[index % rotations.length]
-  const y = offsetsY[index % offsetsY.length]
+  const rot = rotations[index % rotations.length]!
+  const y = offsetsY[index % offsetsY.length]!
   return `rotate(${rot}deg) translateY(${y}px)`
 }
+
+onMounted(async () => {
+  try {
+    const res = await fetch('/api/books/random?count=9')
+    if (!res.ok) throw new Error()
+    const data = await res.json()
+    const books: any[] = Array.isArray(data) ? data : [data]
+    items.value = books.map((book) => ({
+      type: 'book' as const,
+      isbn: book.isbn,
+      title: book.title ?? '',
+      author: (book.authors ?? '').split('|')[0] ?? '',
+      coverUrl: `/api/covers/${book.isbn}`,
+      description: book.description || undefined,
+      publisher: book.publisher || undefined,
+      publishedDate: book.published_date || undefined,
+      pageCount: book.page_count || undefined,
+      subjects: book.subjects || undefined,
+      language: book.language || undefined,
+    }))
+  } catch {
+    error.value = true
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>
@@ -58,16 +91,25 @@ function getTransform(index: number): string {
       </header>
 
       <main class="grid-area">
-        <div class="scattered-grid">
+        <div v-if="loading" class="state-message">chargement…</div>
+        <div v-else-if="error" class="state-message">impossible de charger les livres</div>
+        <div v-else class="scattered-grid">
           <ItemCard
             v-for="(item, i) in items"
             :key="i"
             :item="item"
             :transform="getTransform(i)"
             :colorIndex="i"
+            @click="openBook(item)"
           />
         </div>
       </main>
+
+      <BookModal
+        v-if="selectedBook"
+        :book="selectedBook"
+        @close="selectedBook = null"
+      />
 
       <footer class="site-footer">
         <span>— curiouser and curiouser —</span>
@@ -162,6 +204,15 @@ function getTransform(index: number): string {
   padding: 2rem 1rem;
   /* Espace pour les cartes qui débordent via transform */
   overflow: visible;
+}
+
+.state-message {
+  text-align: center;
+  padding: 4rem;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  color: #c9a84c;
+  opacity: 0.6;
 }
 
 /* ── Footer ── */

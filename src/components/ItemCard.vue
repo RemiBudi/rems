@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 interface BookItem {
   type: 'book'
+  isbn: string
   title: string
   author: string
-  note: number
-  status: 'Lu' | 'A lire'
   coverUrl?: string
 }
 
@@ -36,10 +37,7 @@ const suits = ['♠', '♥', '♦', '♣'] as const
 const color = coverColors[props.colorIndex % coverColors.length]!
 const suit = suits[props.colorIndex % suits.length]!
 
-function stars(note: number): string {
-  if (note === 0) return ''
-  return '★'.repeat(note) + '☆'.repeat(5 - note)
-}
+const imgFailed = ref(false)
 </script>
 
 <template>
@@ -47,12 +45,10 @@ function stars(note: number): string {
 
     <!-- Book card -->
     <div v-if="item.type === 'book'" class="card book-card">
-      <!-- Couverture image (quand coverUrl est disponible) -->
-      <div v-if="item.coverUrl" class="book-cover book-cover-image">
+      <div v-if="item.coverUrl && !imgFailed" class="book-cover book-cover-image">
         <div class="book-spine" :style="{ backgroundColor: color.spine }"></div>
-        <img :src="item.coverUrl" :alt="item.title" class="cover-img" />
+        <img :src="item.coverUrl" :alt="item.title" class="cover-img" @error="imgFailed = true" />
       </div>
-      <!-- Couverture colorée (placeholder) -->
       <div v-else class="book-cover" :style="{ backgroundColor: color.bg }">
         <div class="book-spine" :style="{ backgroundColor: color.spine }"></div>
         <span class="book-suit" :style="{ color: color.text }">{{ suit }}</span>
@@ -60,14 +56,8 @@ function stars(note: number): string {
         <span class="book-suit book-suit-bottom" :style="{ color: color.text }">{{ suit }}</span>
       </div>
       <div class="book-info">
-        <p v-if="item.coverUrl" class="book-title-info">{{ item.title }}</p>
+        <p v-if="item.coverUrl && !imgFailed" class="book-title-info">{{ item.title }}</p>
         <p class="book-author">{{ item.author }}</p>
-        <div class="book-footer">
-          <span class="book-stars">{{ stars(item.note) }}</span>
-          <span class="status-badge" :class="item.status === 'Lu' ? 'badge-lu' : 'badge-alire'">
-            {{ item.status }}
-          </span>
-        </div>
       </div>
     </div>
 
@@ -200,41 +190,8 @@ function stars(note: number): string {
   font-style: italic;
   font-size: 0.72rem;
   color: #3a2010;
-  margin: 0 0 7px;
+  margin: 0;
   line-height: 1.3;
-}
-
-.book-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.book-stars {
-  font-size: 0.7rem;
-  color: #c9a84c;
-  letter-spacing: 1px;
-}
-
-.status-badge {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 0.58rem;
-  letter-spacing: 0.05em;
-  padding: 2px 6px;
-  border-radius: 2px;
-  white-space: nowrap;
-  font-weight: 600;
-}
-
-.badge-lu {
-  background-color: #1b4332;
-  color: #d5e8d4;
-}
-
-.badge-alire {
-  background-color: #6b1a1a;
-  color: #f4e4c1;
 }
 
 /* ── Partition ── */
