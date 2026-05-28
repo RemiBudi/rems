@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: books-postgres
+    environment:
+      POSTGRES_DB: books_db
+      POSTGRES_USER: books_user
+      POSTGRES_PASSWORD: books_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - books_postgres_data:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+
+volumes:
+  books_postgres_data:

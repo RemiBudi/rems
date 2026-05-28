@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  isbn           String  @id @db.VarChar
+  title          String? @db.VarChar
+  authors        String? @db.VarChar
+  language       String? @db.VarChar
+  description    String? @db.VarChar
+  page_count     Int?
+  publisher      String? @db.VarChar
+  published_date String? @db.VarChar
+  cover_url      String? @db.VarChar
+  subjects       String? @db.VarChar
+  source         String? @db.VarChar
+
+  @@map("books")
+}
