@@ -45,6 +45,8 @@ function openItem(item: Item) {
   else selectedArtist.value = item
 }
 
+const API = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5)
 }
@@ -61,8 +63,8 @@ function getTransform(index: number): string {
 onMounted(async () => {
   try {
     const [booksRes, artistsRes] = await Promise.all([
-      fetch('/api/books/random?count=6'),
-      fetch('/api/artists/random?count=3'),
+      fetch(`${API}/api/books/random?count=6`),
+      fetch(`${API}/api/artists/random?count=3`),
     ])
     if (!booksRes.ok || !artistsRes.ok) throw new Error()
 
@@ -74,7 +76,7 @@ onMounted(async () => {
       isbn: b.isbn,
       title: b.title ?? '',
       author: (b.authors ?? '').split('|')[0] ?? '',
-      coverUrl: `/api/covers/${b.isbn}`,
+      coverUrl: `${API}/api/covers/${b.isbn}`,
       description: b.description || undefined,
       publisher: b.publisher || undefined,
       publishedDate: b.published_date || undefined,
@@ -94,7 +96,7 @@ onMounted(async () => {
       globalPlaycount: a.global_playcount || undefined,
       summary: a.summary || undefined,
       lastfmUrl: a.lastfm_url || undefined,
-      imageUrl: a.mbid ? `/api/artist-images/${a.mbid}` : undefined,
+      imageUrl: a.mbid ? `${API}/api/artist-images/${a.mbid}` : undefined,
     }))
 
     items.value = shuffle([...books, ...artists])
