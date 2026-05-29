@@ -116,6 +116,37 @@ function formatPlaycount(n?: number): string {
     0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
+@media (max-width: 640px) {
+  .card-wrapper {
+    transform: none !important;
+    display: block;
+    width: 100%;
+  }
+
+  .card-wrapper:hover {
+    transform: translateY(-6px) scale(1.02) !important;
+  }
+
+  .card,
+  .book-card,
+  .artist-card {
+    width: 100%;
+  }
+
+  .book-cover {
+    height: 200px;
+  }
+
+  .vinyl-wrap {
+    height: 180px;
+  }
+
+  .vinyl-disc {
+    width: 140px;
+    height: 140px;
+  }
+}
+
 /* ── Book ── */
 .book-card {
   width: 200px;

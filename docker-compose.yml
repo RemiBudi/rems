@@ -22,8 +22,6 @@ services:
     environment:
       DATABASE_URL: postgresql://books_user:books_password@postgres:5432/books_db
       STATIC_DIR: /static
-    volumes:
-      - ./public/static:/static:ro
     depends_on:
       postgres:
         condition: service_healthy

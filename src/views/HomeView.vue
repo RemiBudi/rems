@@ -46,6 +46,7 @@ function openItem(item: Item) {
 }
 
 const API = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+const IMAGES = (import.meta.env.VITE_IMAGES_BASE_URL ?? '').replace(/\/$/, '')
 
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5)
@@ -76,7 +77,7 @@ onMounted(async () => {
       isbn: b.isbn,
       title: b.title ?? '',
       author: (b.authors ?? '').split('|')[0] ?? '',
-      coverUrl: `${API}/api/covers/${b.isbn}`,
+      coverUrl: IMAGES ? `${IMAGES}/covers/${b.isbn}.jpg` : `${API}/api/covers/${b.isbn}`,
       description: b.description || undefined,
       publisher: b.publisher || undefined,
       publishedDate: b.published_date || undefined,
@@ -96,7 +97,7 @@ onMounted(async () => {
       globalPlaycount: a.global_playcount || undefined,
       summary: a.summary || undefined,
       lastfmUrl: a.lastfm_url || undefined,
-      imageUrl: a.mbid ? `${API}/api/artist-images/${a.mbid}` : undefined,
+      imageUrl: a.mbid ? (IMAGES ? `${IMAGES}/artists/${a.mbid}.jpg` : `${API}/api/artist-images/${a.mbid}`) : undefined,
     }))
 
     items.value = shuffle([...books, ...artists])
@@ -223,14 +224,20 @@ onMounted(async () => {
   opacity: 0.6;
 }
 
-.site-footer {
-  text-align: center;
-  margin-top: 4rem;
-  font-family: 'IM Fell English', Georgia, serif;
-  font-style: italic;
-  font-size: 0.85rem;
-  color: #c9a84c;
-  opacity: 0.5;
-  letter-spacing: 0.1em;
+@media (max-width: 640px) {
+  .content {
+    padding: 0 1rem 3rem;
+    overflow-x: hidden;
+  }
+
+  .site-header {
+    padding: 2rem 0 1rem;
+  }
+
+  .scattered-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 1rem;
+    padding: 1rem 0.25rem;
+  }
 }
 </style>

@@ -233,6 +233,34 @@ function formatNumber(n?: number): string {
 .lastfm-link:hover { opacity: 1; }
 
 @media (max-width: 480px) {
-  .modal-body { flex-direction: column; align-items: center; }
+  .overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal {
+    border-radius: 12px 12px 0 0;
+    max-height: 90vh;
+  }
+
+  .modal-body {
+    flex-direction: column;
+    align-items: center;
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .modal-name {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .modal-rank {
+    text-align: center;
+  }
+
+  .modal-stats {
+    justify-content: center;
+  }
 }
 </style>

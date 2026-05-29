@@ -224,13 +224,34 @@ function formatSubjects(subjects?: string): string[] {
 
 /* ── Responsive ── */
 @media (max-width: 540px) {
+  .overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal {
+    border-radius: 12px 12px 0 0;
+    max-height: 90vh;
+  }
+
   .modal-body {
     flex-direction: column;
+    padding: 1.25rem;
+    gap: 1.25rem;
   }
+
   .modal-cover-wrap {
     width: 100%;
     display: flex;
     justify-content: center;
+  }
+
+  .modal-cover-img img {
+    width: 120px;
+  }
+
+  .modal-title {
+    font-size: 1.2rem;
   }
 }
 </style>
