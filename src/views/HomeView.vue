@@ -225,9 +225,12 @@ onMounted(async () => {
 }
 
 @media (max-width: 640px) {
+  .page {
+    overflow-x: hidden;
+  }
+
   .content {
     padding: 0 1rem 3rem;
-    overflow-x: hidden;
   }
 
   .site-header {
@@ -235,9 +238,9 @@ onMounted(async () => {
   }
 
   .scattered-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem 1rem;
-    padding: 1rem 0.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 3rem 1.5rem;
+    padding: 1.5rem 0.5rem;
   }
 }
 </style>

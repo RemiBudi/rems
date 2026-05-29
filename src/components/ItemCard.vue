@@ -117,33 +117,27 @@ function formatPlaycount(n?: number): string {
 }
 
 @media (max-width: 640px) {
-  .card-wrapper {
-    transform: none !important;
-    display: block;
-    width: 100%;
-  }
-
   .card-wrapper:hover {
-    transform: translateY(-6px) scale(1.02) !important;
+    transform: rotate(0deg) translateY(-8px) scale(1.03) !important;
   }
 
   .card,
   .book-card,
   .artist-card {
-    width: 100%;
+    width: 150px;
   }
 
   .book-cover {
-    height: 200px;
+    height: 190px;
   }
 
   .vinyl-wrap {
-    height: 180px;
+    height: 170px;
   }
 
   .vinyl-disc {
-    width: 140px;
-    height: 140px;
+    width: 130px;
+    height: 130px;
   }
 }
 
