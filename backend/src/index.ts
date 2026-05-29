@@ -13,14 +13,14 @@ app.use(cors())
 
 app.get('/', (c) => c.json({ message: 'API OK' }))
 
-app.get('/books/random', async (c) => {
+app.get('/api/books/random', async (c) => {
   const count = Math.min(Number(c.req.query('count') ?? 1) || 1, 15)
   const books = await prisma.$queryRaw<any[]>`SELECT * FROM books ORDER BY RANDOM() LIMIT ${count}`
   if (!books.length) return c.json({ error: 'No books found' }, 404)
   return c.json(count === 1 ? books[0] : books)
 })
 
-app.get('/artists/random', async (c) => {
+app.get('/api/artists/random', async (c) => {
   const count = Math.min(Number(c.req.query('count') ?? 1) || 1, 15)
   // Pondération par rank : rank faible = plus écouté = plus de chance d'apparaître
   const artists = await prisma.$queryRaw<any[]>`
@@ -30,7 +30,7 @@ app.get('/artists/random', async (c) => {
   return c.json(count === 1 ? artists[0] : artists)
 })
 
-app.get('/covers/:isbn', async (c) => {
+app.get('/api/covers/:isbn', async (c) => {
   const isbn = c.req.param('isbn')
   if (!/^\d+$/.test(isbn)) return c.json({ error: 'Invalid ISBN' }, 400)
 
@@ -43,7 +43,7 @@ app.get('/covers/:isbn', async (c) => {
   }
 })
 
-app.get('/artist-images/:mbid', async (c) => {
+app.get('/api/artist-images/:mbid', async (c) => {
   const mbid = c.req.param('mbid')
   if (!/^[0-9a-f-]{36}$/.test(mbid)) return c.json({ error: 'Invalid mbid' }, 400)
 
@@ -56,6 +56,7 @@ app.get('/artist-images/:mbid', async (c) => {
   }
 })
 
-serve({ fetch: app.fetch, port: 3000 })
+const port = Number(process.env.PORT) || 3000
+serve({ fetch: app.fetch, port })
 
-console.log('API running on http://localhost:3000')
+console.log(`API running on http://localhost:${port}`)
