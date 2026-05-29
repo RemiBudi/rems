@@ -9,14 +9,16 @@ interface BookItem {
   coverUrl?: string
 }
 
-interface PartitionItem {
-  type: 'partition'
-  title: string
-  composer: string
+interface ArtistItem {
+  type: 'artist'
+  name: string
+  rank?: number
+  userPlaycount?: number
+  imageUrl?: string
 }
 
 const props = defineProps<{
-  item: BookItem | PartitionItem
+  item: BookItem | ArtistItem
   transform: string
   colorIndex: number
 }>()
@@ -38,6 +40,12 @@ const color = coverColors[props.colorIndex % coverColors.length]!
 const suit = suits[props.colorIndex % suits.length]!
 
 const imgFailed = ref(false)
+
+function formatPlaycount(n?: number): string {
+  if (!n) return ''
+  if (n >= 1000) return `${Math.round(n / 1000)}k écoutes`
+  return `${n} écoutes`
+}
 </script>
 
 <template>
@@ -61,17 +69,17 @@ const imgFailed = ref(false)
       </div>
     </div>
 
-    <!-- Partition card -->
-    <div v-else class="card partition-card">
-      <div class="partition-top">
-        <span class="clef">𝄞</span>
-        <div class="staff">
-          <div v-for="i in 5" :key="i" class="staff-line"></div>
+    <!-- Artist card -->
+    <div v-else class="card artist-card">
+      <div class="vinyl-wrap">
+        <div class="vinyl-disc">
+          <img v-if="item.imageUrl && !imgFailed" :src="item.imageUrl" :alt="item.name" class="vinyl-img" @error="imgFailed = true" />
+          <span v-else class="vinyl-placeholder">♪</span>
         </div>
       </div>
-      <div class="partition-info">
-        <p class="partition-title">{{ item.title }}</p>
-        <p class="partition-composer">{{ item.composer }}</p>
+      <div class="artist-info">
+        <p class="artist-name">{{ item.name }}</p>
+        <p v-if="item.userPlaycount" class="artist-playcount">{{ formatPlaycount(item.userPlaycount) }}</p>
       </div>
     </div>
 
@@ -194,67 +202,111 @@ const imgFailed = ref(false)
   line-height: 1.3;
 }
 
-/* ── Partition ── */
-.partition-card {
+/* ── Artist ── */
+.artist-card {
   width: 200px;
+  background: #111 !important;
 }
 
-.partition-top {
-  position: relative;
-  height: 160px;
-  background-color: #faf3e0;
+.card-wrapper:hover .artist-card {
+  box-shadow:
+    8px 18px 44px rgba(0, 0, 0, 0.9),
+    0 0 30px rgba(180, 30, 30, 0.15);
+}
+
+.vinyl-wrap {
+  background: #0d0d0d;
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px 14px;
-  border-bottom: 1px solid #c8a96a;
 }
 
-.clef {
-  font-size: 6rem;
-  line-height: 1;
-  color: #1a0808;
+.vinyl-disc {
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  transition: transform 1.8s linear;
+}
+
+/* Groove rings overlay */
+.vinyl-disc::before {
+  content: '';
   position: absolute;
-  left: 14px;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 24px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 25px rgba(255, 255, 255, 0.04),
+    inset 0 0 0 48px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 49px rgba(255, 255, 255, 0.04),
+    inset 0 0 0 72px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 73px rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Center hole */
+.vinyl-disc::after {
+  content: '';
+  position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.85;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #0d0d0d;
+  box-shadow: 0 0 0 2px #222;
+  z-index: 2;
 }
 
-.staff {
+.card-wrapper:hover .vinyl-disc {
+  transform: rotate(45deg);
+  transition: transform 3s linear;
+}
+
+.vinyl-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #1a1a1a;
+}
+
+.vinyl-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  padding-left: 48px;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #444;
+  background: #1a1a1a;
 }
 
-.staff-line {
-  height: 1px;
-  background-color: #3a2010;
-  width: 100%;
-  opacity: 0.7;
-}
-
-.partition-info {
+.artist-info {
   padding: 10px 12px;
-  background-color: #f4e4c1;
+  background: #111;
+  border-top: 1px solid #2a2a2a;
 }
 
-.partition-title {
+.artist-name {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #1a0808;
-  margin: 0 0 4px;
+  color: #e8dcc8;
+  margin: 0 0 3px;
   line-height: 1.3;
 }
 
-.partition-composer {
-  font-family: 'IM Fell English', Georgia, serif;
-  font-style: italic;
-  font-size: 0.72rem;
-  color: #5a3a20;
+.artist-playcount {
+  font-size: 0.65rem;
+  color: #b03030;
   margin: 0;
+  letter-spacing: 0.04em;
+  font-weight: 600;
 }
 </style>

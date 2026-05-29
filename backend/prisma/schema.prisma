@@ -22,3 +22,21 @@ model Book {
 
   @@map("books")
 }
+
+model Artist {
+  id               Int       @id @default(autoincrement())
+  mbid             String?   @unique @db.Uuid
+  name             String
+  rank             Int?
+  user_playcount   Int?
+  lastfm_url       String?
+  ontour           Boolean   @default(false)
+  listeners        Int?
+  global_playcount Int?
+  summary          String?
+  image_source_url String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @default(now())
+
+  @@map("artists")
+}

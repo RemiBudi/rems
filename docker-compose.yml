@@ -10,6 +10,32 @@ services:
       - "5432:5432"
     volumes:
       - books_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U books_user -d books_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql://books_user:books_password@postgres:5432/books_db
+      STATIC_DIR: /static
+    volumes:
+      - ./public/static:/static:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
   adminer:
     image: adminer
     ports:
